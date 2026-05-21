@@ -1,0 +1,33 @@
+# Build outputs
+build/
+build-macos/
+build-macos-intel/
+
+# CMake and generated files
+CMakeUserPresets.json
+compile_commands.json
+CTestTestfile.cmake
+cmake_install.cmake
+
+# VS/IDE artifacts
+.vs/
+.idea/
+
+# macOS metadata
+.DS_Store
+
+# Runtime/test outputs
+pluginval_output.txt
+pluginval_results.txt
+pv.txt
+
+# Temporary test artifacts
+Testing/Temporary/
+
+# Local pluginval tool payloads and logs
+tools/pluginval/pluginval.exe
+tools/pluginval/*.zip
+tools/pluginval/logs/
+
+# Local DAW session backups
+test_session/Backups/

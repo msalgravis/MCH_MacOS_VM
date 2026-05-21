@@ -1,0 +1,115 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Release Plugin",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"build",
+				"--config",
+				"Release"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Kill Plugin Test Processes",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"taskkill /F /IM pluginval.exe /T & taskkill /F /IM reaper.exe /T & taskkill /F /IM reaper_host64.exe /T"
+			],
+			"group": "none"
+		},
+		{
+			"label": "Build Release Plugin",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"build",
+				"--config",
+				"Release"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Pluginval Strict",
+			"type": "shell",
+			"command": "tools\\pluginval\\pluginval.exe",
+			"args": [
+				"--strictness-level",
+				"10",
+				"--repeat",
+				"3",
+				"--randomise",
+				"--timeout-ms",
+				"120000",
+				"build\\BinauralSpeakerRoom_artefacts\\Release\\VST3\\Sonarworks VMPRO MCH.vst3"
+			],
+			"group": "test"
+		},
+		{
+			"label": "Kill Pluginval",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"taskkill /F /IM pluginval.exe /T"
+			],
+			"group": "none"
+		},
+		{
+			"label": "Build Release Plugin",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"build",
+				"--config",
+				"Release"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Pluginval Strict Once",
+			"type": "shell",
+			"command": "tools\\pluginval\\pluginval.exe",
+			"args": [
+				"--strictness-level",
+				"10",
+				"--repeat",
+				"1",
+				"--timeout-ms",
+				"120000",
+				"build\\BinauralSpeakerRoom_artefacts\\Release\\VST3\\Sonarworks VMPRO MCH.vst3"
+			],
+			"group": "test"
+		},
+		{
+			"label": "Run Pluginval Strict Capture",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"\"tools\\pluginval\\pluginval.exe --strictness-level 10 --repeat 1 --timeout-ms 120000 \"\"build\\BinauralSpeakerRoom_artefacts\\Release\\VST3\\Sonarworks VMPRO MCH.vst3\"\" > tools\\pluginval\\logs\\latest_strict.txt 2>&1 & echo PLUGINVAL_EXIT:%ERRORLEVEL%\""
+			],
+			"group": "test"
+		},
+		{
+			"label": "Run Pluginval Strict Script",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"tools\\pluginval\\run_strict.ps1"
+			],
+			"group": "test"
+		}
+	]
+}

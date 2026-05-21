@@ -1,0 +1,113 @@
+name: macOS Build And Validation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS 14 universal
+            runner: macos-14
+            architectures: arm64;x86_64
+            build_dir: build-macos
+          - name: macOS 13 x86_64
+            runner: macos-13
+            architectures: x86_64
+            build_dir: build-macos-intel
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: >
+          cmake -S . -B ${{ matrix.build_dir }} -G Xcode
+          -DBSR_MACOS_DEPLOYMENT_TARGET=12.0
+          -DBSR_MACOS_ARCHITECTURES="${{ matrix.architectures }}"
+
+      - name: Build Release
+        run: cmake --build ${{ matrix.build_dir }} --config Release
+
+      - name: Build test target
+        run: cmake --build ${{ matrix.build_dir }} --config Release --target BinauralSpeakerRoomTests
+
+      - name: Run unit tests
+        run: ctest --test-dir ${{ matrix.build_dir }} -C Release --output-on-failure
+
+      - name: Validate plugin bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VST3_BUNDLE="${{ matrix.build_dir }}/BinauralSpeakerRoom_artefacts/Release/VST3/Sonarworks VMPRO MCH.vst3"
+          AU_BUNDLE="${{ matrix.build_dir }}/BinauralSpeakerRoom_artefacts/Release/AU/Sonarworks VMPRO MCH.component"
+
+          VST3_BIN="$VST3_BUNDLE/Contents/MacOS/Sonarworks VMPRO MCH"
+          AU_BIN="$AU_BUNDLE/Contents/MacOS/Sonarworks VMPRO MCH"
+
+          test -d "$VST3_BUNDLE"
+          test -d "$AU_BUNDLE"
+          test -f "$VST3_BIN"
+          test -f "$AU_BIN"
+
+          mkdir -p "${{ matrix.build_dir }}/ci-reports"
+          REPORT="${{ matrix.build_dir }}/ci-reports/macos_bundle_report.txt"
+
+          {
+            echo "Runner: ${{ matrix.runner }}"
+            echo "Architectures requested: ${{ matrix.architectures }}"
+            echo
+            echo "VST3 bundle: $VST3_BUNDLE"
+            echo "AU bundle: $AU_BUNDLE"
+            echo
+            echo "VST3 binary architectures:"
+            lipo -info "$VST3_BIN"
+            echo
+            echo "AU binary architectures:"
+            lipo -info "$AU_BIN"
+            echo
+            echo "VST3 file info:"
+            file "$VST3_BIN"
+            echo
+            echo "AU file info:"
+            file "$AU_BIN"
+            echo
+            echo "VST3 bundle identifier:"
+            /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$VST3_BUNDLE/Contents/Info.plist"
+            echo
+            echo "AU bundle identifier:"
+            /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$AU_BUNDLE/Contents/Info.plist"
+            echo
+            echo "VST3 codesign status:"
+            codesign --display --verbose=2 "$VST3_BUNDLE" || true
+            echo
+            echo "AU codesign status:"
+            codesign --display --verbose=2 "$AU_BUNDLE" || true
+          } | tee "$REPORT"
+
+      - name: Upload plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-plugins-${{ matrix.runner }}
+          path: |
+            ${{ matrix.build_dir }}/BinauralSpeakerRoom_artefacts/Release/VST3/
+            ${{ matrix.build_dir }}/BinauralSpeakerRoom_artefacts/Release/AU/
+
+      - name: Upload validation reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-validation-${{ matrix.runner }}
+          path: |
+            ${{ matrix.build_dir }}/Testing/Temporary/LastTest.log
+            ${{ matrix.build_dir }}/ci-reports/macos_bundle_report.txt
