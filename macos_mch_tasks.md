@@ -57,7 +57,7 @@ Locked for Phase 0 (2026-05-21):
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
 | 2.1 | Audit source for Windows-only assumptions | ✅ COMPLETED | HIGH | Audited Source/Tests path and restore flows; no explicit Win32-only APIs found in plugin code, and path restore hardening was scoped to cross-platform `juce::File` usage |
-| 2.2 | Fix compiler issues under Clang/macOS | NEEDS WORK | HIGH | Applied portability-safe path restore helpers and fixed JUCE API usage (`juce::File::isAbsolutePath` static call); native Apple Clang compile still pending in Phase 3 |
+| 2.2 | Fix compiler issues under Clang/macOS | NEEDS WORK | HIGH | Applied portability-safe path restore helpers and fixed JUCE API usage (`juce::File::isAbsolutePath` static call); autonomous macOS CI now runs natively, but latest `macOS 14 universal` job failed at `Build Release` and must be fixed before marking complete |
 | 2.3 | Verify plugin state, file restore, and IR loading behavior on macOS | NEEDS WORK | HIGH | Added path normalization for persisted IR state (trim/quotes/`~/` support, relative-path resolution, file-only checks) and validated via Windows unit/pluginval regression; native macOS runtime verification deferred to Phase 3 |
 | 2.4 | Verify UI behavior on macOS | NEEDS WORK | MEDIUM | UI code reviewed for platform-safe JUCE file chooser/layout usage; native macOS Retina/file-dialog behavioral verification remains pending |
 | 2.5 | Keep stereo and Windows MCH behavior unchanged | ✅ COMPLETED | HIGH | Windows regression gates passed after changes (`cmake --build build --config Release`, `ctest --test-dir build -C Release --output-on-failure`, strict pluginval script success) |
@@ -67,7 +67,7 @@ Locked for Phase 0 (2026-05-21):
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 3.1 | Produce first successful macOS plugin build | PENDING | HIGH | Build at least one working macOS bundle from source |
+| 3.1 | Produce first successful macOS plugin build | IN PROGRESS | HIGH | Autonomous CI attempted native macOS build; latest `macOS 14 universal` failed at `Build Release` and `macOS 13 x86_64` remained queued, so first successful build is not yet achieved |
 | 3.2 | Run automated tests on macOS where available | PENDING | HIGH | Run unit tests and capture failures specific to macOS |
 | 3.3 | Verify bundle before host scan | PENDING | HIGH | Confirm produced bundle has the expected architecture slice(s), metadata, install path, and signing state before debugging host-specific failures |
 | 3.4 | Validate plugin load on macOS host environment | PENDING | HIGH | Confirm plugin bundle loads without immediate host rejection |
