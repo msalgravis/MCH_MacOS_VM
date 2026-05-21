@@ -54,6 +54,21 @@
 
 ## Session Learnings (2026-05-19)
 
+## Session Learnings (2026-05-21)
+
+### macOS CI Validation Pipeline
+- Native macOS validation is now wired via `.github/workflows/macos-build.yml` and should be treated as the first autonomous gate for Phase 2.2/3.x.
+- Current matrix intent:
+- `macos-14` with universal `arm64;x86_64`
+- `macos-13` with `x86_64`
+- CI runs should build plugin targets, run `ctest`, validate bundle metadata (`lipo`, `file`, `Info.plist`, `codesign --display`), and upload artifacts/reports.
+- If a new chat starts Phase 3 work, always check latest Actions run status/results first before applying code changes.
+
+### macOS CI Troubleshooting Flow
+- If macOS build fails with generic `xcodebuild`/exit-65 style errors and logs are not directly available, prefer stabilizing CI generator/toolchain first (e.g., Ninja single-config Release) before making broad source changes.
+- Keep fixes minimal and parity-safe: no DSP behavior changes while chasing macOS build portability.
+- After each CI fix push, re-check run/job states and step-level outcomes to identify whether failure moved past `Configure`, `Build Release`, `ctest`, or bundle validation.
+
 ### DSP vs UI Separation
 - MCH DSP backend (MchBinauralRenderer, SpeakerPairProcessor, MchSlotIrManager) is **fully implemented and working** independently.
 - UI layer (PluginEditor) and DSP layer can be developed/debugged separately.
