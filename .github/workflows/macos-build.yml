@@ -33,6 +33,7 @@ jobs:
       - name: Configure
         shell: bash
         run: |
+          mkdir -p "${{ matrix.build_dir }}/ci-reports"
           cmake -S . -B "${{ matrix.build_dir }}" -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DBSR_MACOS_DEPLOYMENT_TARGET=12.0 \
@@ -40,16 +41,23 @@ jobs:
             -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
             -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=NO \
             -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
-            -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=""
+            -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM="" \
+            2>&1 | tee "${{ matrix.build_dir }}/ci-reports/configure.log"
 
       - name: Build Release
-        run: cmake --build ${{ matrix.build_dir }}
+        shell: bash
+        run: |
+          cmake --build "${{ matrix.build_dir }}" 2>&1 | tee "${{ matrix.build_dir }}/ci-reports/build_release.log"
 
       - name: Build test target
-        run: cmake --build ${{ matrix.build_dir }} --target BinauralSpeakerRoomTests
+        shell: bash
+        run: |
+          cmake --build "${{ matrix.build_dir }}" --target BinauralSpeakerRoomTests 2>&1 | tee "${{ matrix.build_dir }}/ci-reports/build_tests.log"
 
       - name: Run unit tests
-        run: ctest --test-dir ${{ matrix.build_dir }} --output-on-failure
+        shell: bash
+        run: |
+          ctest --test-dir "${{ matrix.build_dir }}" --output-on-failure 2>&1 | tee "${{ matrix.build_dir }}/ci-reports/ctest.log"
 
       - name: Validate plugin bundles
         shell: bash
@@ -103,6 +111,7 @@ jobs:
           } | tee "$REPORT"
 
       - name: Upload plugin artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: macos-plugins-${{ matrix.runner }}
@@ -111,9 +120,14 @@ jobs:
             ${{ matrix.build_dir }}/BinauralSpeakerRoom_artefacts/Release/AU/
 
       - name: Upload validation reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: macos-validation-${{ matrix.runner }}
           path: |
+            ${{ matrix.build_dir }}/ci-reports/configure.log
+            ${{ matrix.build_dir }}/ci-reports/build_release.log
+            ${{ matrix.build_dir }}/ci-reports/build_tests.log
+            ${{ matrix.build_dir }}/ci-reports/ctest.log
             ${{ matrix.build_dir }}/Testing/Temporary/LastTest.log
             ${{ matrix.build_dir }}/ci-reports/macos_bundle_report.txt
