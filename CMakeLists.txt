@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(BinauralSpeakerRoom VERSION 0.1.0 LANGUAGES CXX)
+project(BinauralSpeakerRoom VERSION 0.1.0 LANGUAGES C CXX)
 
 enable_testing()
 
