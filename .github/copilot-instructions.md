@@ -59,8 +59,9 @@
 ### macOS CI Validation Pipeline
 - Native macOS validation is now wired via `.github/workflows/macos-build.yml` and should be treated as the first autonomous gate for Phase 2.2/3.x.
 - Current matrix intent:
-- `macos-14` with universal `arm64;x86_64`
-- `macos-13` with `x86_64`
+- Active stabilization mode: single `macos-14` universal job (`arm64;x86_64`) to reduce queue pressure and speed feedback.
+- Re-enable `macos-13`/Intel pass only after `macos-14` path is consistently green.
+- Workflow concurrency is enabled to cancel superseded in-progress runs on the same ref; keep this behavior unless the user explicitly asks for historical parallel runs.
 - CI runs should build plugin targets, run `ctest`, validate bundle metadata (`lipo`, `file`, `Info.plist`, `codesign --display`), and upload artifacts/reports.
 - If a new chat starts Phase 3 work, always check latest Actions run status/results first before applying code changes.
 
