@@ -35,6 +35,10 @@ jobs:
           cmake -S . -B ${{ matrix.build_dir }} -G Xcode
           -DBSR_MACOS_DEPLOYMENT_TARGET=12.0
           -DBSR_MACOS_ARCHITECTURES="${{ matrix.architectures }}"
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=NO
+          -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY=""
+          -DCMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM=""
 
       - name: Build Release
         run: cmake --build ${{ matrix.build_dir }} --config Release
