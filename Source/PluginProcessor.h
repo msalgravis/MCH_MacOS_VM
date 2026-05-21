@@ -11,7 +11,7 @@
 #include "Parameters.h"
 
 class BinauralSpeakerRoomAudioProcessor final : public juce::AudioProcessor,
-                                              private juce::AudioProcessorValueTreeState::Listener
+                                              public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     struct MeterSnapshot
@@ -171,7 +171,8 @@ private:
     std::array<std::atomic<float>, bsr::mch::maxRendererInputChannels> mchInputChannelRms {};
     std::array<std::atomic<float>, bsr::parameters::maxPairSlots> mchSlotOutputRmsL {};
     std::array<std::atomic<float>, bsr::parameters::maxPairSlots> mchSlotOutputRmsR {};
-    std::atomic<std::shared_ptr<IRTransferData>> pendingIRData;
+    std::shared_ptr<IRTransferData> pendingIRData;
+    juce::SpinLock pendingIRDataLock;
     juce::AudioBuffer<float> pannedInputBuffer;
     juce::AudioBuffer<float> mchInputScratchBuffer;
     bsr::mch::SlotIrManager mchSlotIrManager;

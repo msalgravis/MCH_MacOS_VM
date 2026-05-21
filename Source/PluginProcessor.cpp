@@ -145,7 +145,10 @@ void BinauralSpeakerRoomAudioProcessor::releaseResources()
     mchActiveDryPairCount.store(0, std::memory_order_relaxed);
     mchActiveConvolutionPathCount.store(0, std::memory_order_relaxed);
     mchMaxConvolutionPathCount.store(0, std::memory_order_relaxed);
-    pendingIRData.store(nullptr, std::memory_order_release);
+    {
+        const juce::SpinLock::ScopedLockType lock(pendingIRDataLock);
+        pendingIRData.reset();
+    }
     pannedInputBuffer.setSize(0, 0, true, false, true);
     convolver.releaseResources();
     mchRenderer.releaseResources();
@@ -177,8 +180,8 @@ void BinauralSpeakerRoomAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     juce::ignoreUnused(midiMessages);
     juce::ScopedNoDenormals noDenormals;
 
-    const int inputChannelCount = getTotalNumInputChannels();
-    const int outputChannelCount = getTotalNumOutputChannels();
+    const int inputChannelCount = this->getTotalNumInputChannels();
+    const int outputChannelCount = this->getTotalNumOutputChannels();
     const int numSamples = buffer.getNumSamples();
 
     // Hosts may probe plugins with transient zero-channel layouts.
@@ -346,7 +349,7 @@ void BinauralSpeakerRoomAudioProcessor::processBlock(juce::AudioBuffer<float>& b
     }
 
     // Clear extra output channels
-    for (auto channel = getTotalNumInputChannels(); channel < getTotalNumOutputChannels(); ++channel)
+    for (auto channel = this->getTotalNumInputChannels(); channel < this->getTotalNumOutputChannels(); ++channel)
         buffer.clear(channel, 0, buffer.getNumSamples());
 
     mchActivePairCount.store(1, std::memory_order_relaxed);
@@ -372,9 +375,9 @@ void BinauralSpeakerRoomAudioProcessor::processBlock(juce::AudioBuffer<float>& b
 
     // Get input/output pointers
     const auto* inputL = inputChannelCount > 0 ? buffer.getReadPointer(0) : nullptr;
-    const auto* inputR = getTotalNumInputChannels() > 1 ? buffer.getReadPointer(1) : inputL;
+    const auto* inputR = this->getTotalNumInputChannels() > 1 ? buffer.getReadPointer(1) : inputL;
     auto* outputL = buffer.getWritePointer(0);
-    auto* outputR = getTotalNumOutputChannels() > 1 ? buffer.getWritePointer(1) : outputL;
+    auto* outputR = this->getTotalNumOutputChannels() > 1 ? buffer.getWritePointer(1) : outputL;
 
     if (inputL == nullptr)
     {
@@ -485,9 +488,9 @@ bool BinauralSpeakerRoomAudioProcessor::isMidiEffect() const
 double BinauralSpeakerRoomAudioProcessor::getTailLengthSeconds() const
 {
     const auto convolverLatencySamples = convolver.getLatencySamples();
-    if (convolverLatencySamples <= 0 || getSampleRate() <= 0.0)
+    if (convolverLatencySamples <= 0 || this->getSampleRate() <= 0.0)
         return 0.0;
-    return static_cast<double>(convolverLatencySamples) / getSampleRate();
+    return static_cast<double>(convolverLatencySamples) / this->getSampleRate();
 }
 
 int BinauralSpeakerRoomAudioProcessor::getNumPrograms()
@@ -864,13 +867,23 @@ bool BinauralSpeakerRoomAudioProcessor::queueLoadedIRForConvolver() noexcept
         dst.assign(channelData, channelData + metadata.numSamples);
     }
 
-    pendingIRData.store(data, std::memory_order_release);
+    {
+        const juce::SpinLock::ScopedLockType lock(pendingIRDataLock);
+        pendingIRData = std::move(data);
+    }
+
     return true;
 }
 
 void BinauralSpeakerRoomAudioProcessor::applyPendingIRUpdateIfAvailable() noexcept
 {
-    auto data = pendingIRData.exchange(nullptr, std::memory_order_acq_rel);
+    std::shared_ptr<IRTransferData> data;
+    {
+        const juce::SpinLock::ScopedLockType lock(pendingIRDataLock);
+        data = std::move(pendingIRData);
+        pendingIRData.reset();
+    }
+
     if (!data || data->numSamples <= 0)
         return;
 
