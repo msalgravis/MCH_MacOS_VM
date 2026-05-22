@@ -46,3 +46,10 @@
 - Run first native macOS configure/build with Xcode generator and capture Apple Clang diagnostics.
 - Validate VST3 (and AU if needed) load/scan in macOS host environment.
 - Execute macOS-specific state restore/UI checks (paths with spaces, moved/missing IR files, Retina layout behavior).
+
+## Addendum (2026-05-22)
+- Phase 2 is now closed as complete in the tracker after native macOS CI reached green baseline (`26276703594`, commit `ec158a5`).
+- Remaining host-runtime checks originally tracked under 2.3/2.4 are intentionally deferred to Phase 4 tasks:
+  - `2.3` host/runtime portion -> `4.4`
+  - `2.4` host/runtime portion -> `4.5`
+- Decision rationale: keep Phase 2 scoped to cross-platform source/compiler correctness and CI-verifiable behavior, with host-DAW/runtime checks consolidated in Phase 4.

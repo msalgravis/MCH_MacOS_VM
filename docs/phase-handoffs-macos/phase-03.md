@@ -42,3 +42,10 @@
 1. Start Phase 4 host validation on macOS (Reaper scan/load, routing, IR/session restore behavior).
 2. Keep `ec158a5` (`ci-macos-baseline-2026-05-22`) as rollback/reference baseline while applying one change per iteration.
 3. Re-enable additional macOS lanes (for example Intel-specific pass) only after maintaining stable green outcomes on the baseline lane.
+
+## Addendum (2026-05-22)
+- Phase 3 is now treated as complete in the tracker.
+- Remaining host validation items were explicitly deferred and consolidated into Phase 4:
+  - `3.4` -> `4.1`
+  - `3.5` -> `4.2` and `4.4`
+- Decision rationale: keep Phase 3 focused on first native build + CI smoke validation, and execute DAW-host behavioral validation in the dedicated host phase.
