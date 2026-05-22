@@ -99,13 +99,13 @@ Locked for Phase 0 (2026-05-21):
 
 ### Phase 6: Global Output Meter + Gain Range Extension (Win + macOS)
 
-Phase 6 execution intent (locked 2026-05-22): add one new global stereo output meter in MCH mode (under the global gain slider, same width as slider), matching slot-meter behavior and metering final post-global-gain stereo output; extend gain max from +12 dB to +24 dB across linked global/slot/stereo-mode gain controls while preserving backward compatibility.
+Phase 6 execution intent (locked 2026-05-22): add one new global stereo output meter in both MCH and stereo modes (under the global gain slider, same width as slider), matching slot-meter behavior and metering final post-global-gain stereo output; extend gain max from +12 dB to +24 dB across linked global/slot/stereo-mode gain controls while preserving backward compatibility.
 
 #### Phase 6A: Implementation
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 6.1 | Add global stereo output meter in MCH UI | PENDING | HIGH | Add a new meter component directly under the global gain slider (same width as slider), using the same visual/ballistics behavior as current slot meters |
+| 6.1 | Add global stereo output meter in MCH + stereo UI | PENDING | HIGH | Add a new meter component directly under the global gain slider (same width as slider), available in both MCH and stereo modes, using the same visual/ballistics behavior as current slot meters |
 | 6.2 | Wire global meter signal source to final output | PENDING | HIGH | Feed the new meter from final post-global-gain stereo output (overall summed plugin output in MCH mode) |
 | 6.3 | Keep meter update path real-time safe | PENDING | HIGH | Reuse existing meter-safe transfer pattern (no blocking/file I/O/allocations in audio thread) for global meter values |
 | 6.4 | Extend gain max to +24 dB for global controls | PENDING | HIGH | Update global gain parameter range and UI slider limits from +12 dB to +24 dB |
@@ -117,7 +117,7 @@ Phase 6 execution intent (locked 2026-05-22): add one new global stereo output m
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 6.8 | Verify UI placement/behavior of new global meter | PENDING | HIGH | Confirm meter location under global gain slider, matching slot-meter behavior and responsiveness |
+| 6.8 | Verify UI placement/behavior of new global meter | PENDING | HIGH | Confirm meter location under global gain slider in both MCH and stereo modes, matching slot-meter behavior and responsiveness |
 | 6.9 | Verify metering semantics against output audio | PENDING | HIGH | Confirm new meter reflects final stereo output level after global gain changes and slot summing |
 | 6.10 | Verify +24 dB range on all linked gain controls | PENDING | HIGH | Confirm slider/parameter max is +24 dB for global, slot, and linked stereo controls; validate global-to-slot interaction remains correct |
 | 6.11 | Verify state save/restore compatibility | PENDING | HIGH | Confirm existing projects load safely and new +24 dB values serialize/restore correctly |
