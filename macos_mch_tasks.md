@@ -97,6 +97,41 @@ Locked for Phase 0 (2026-05-21):
 | 5.4 | Document deployment steps for a new macOS machine | ✅ COMPLETED | MEDIUM | Deployment/install guidance documented in `README.md` for VST3 and AU paths, quarantine handling, and Reaper scan flow |
 | 5.5 | Add final macOS handoff note | ✅ COMPLETED | MEDIUM | Added `docs/phase-handoffs-macos/phase-05.md` with completed scope, deferred items, verification basis, and next prerequisites |
 
+### Phase 6: Global Output Meter + Gain Range Extension (Win + macOS)
+
+Phase 6 execution intent (locked 2026-05-22): add one new global stereo output meter in MCH mode (under the global gain slider, same width as slider), matching slot-meter behavior and metering final post-global-gain stereo output; extend gain max from +12 dB to +24 dB across linked global/slot/stereo-mode gain controls while preserving backward compatibility.
+
+#### Phase 6A: Implementation
+
+| ID | Task | Status | Priority | Details |
+| ---- | ---- | ------ | -------- | ------- |
+| 6.1 | Add global stereo output meter in MCH UI | PENDING | HIGH | Add a new meter component directly under the global gain slider (same width as slider), using the same visual/ballistics behavior as current slot meters |
+| 6.2 | Wire global meter signal source to final output | PENDING | HIGH | Feed the new meter from final post-global-gain stereo output (overall summed plugin output in MCH mode) |
+| 6.3 | Keep meter update path real-time safe | PENDING | HIGH | Reuse existing meter-safe transfer pattern (no blocking/file I/O/allocations in audio thread) for global meter values |
+| 6.4 | Extend gain max to +24 dB for global controls | PENDING | HIGH | Update global gain parameter range and UI slider limits from +12 dB to +24 dB |
+| 6.5 | Extend gain max to +24 dB for slot controls | PENDING | HIGH | Update per-slot gain parameter/slider ranges from +12 dB to +24 dB, preserving global-to-slot linkage behavior |
+| 6.6 | Extend gain max to +24 dB for linked stereo-mode gain controls | PENDING | HIGH | Ensure any stereo-mode gain controls using the same parameter model are also extended to +24 dB |
+| 6.7 | Preserve backward compatibility for saved sessions | PENDING | HIGH | Keep prior state behavior stable by extending max range without changing existing saved-value interpretation |
+
+#### Phase 6B: Verification
+
+| ID | Task | Status | Priority | Details |
+| ---- | ---- | ------ | -------- | ------- |
+| 6.8 | Verify UI placement/behavior of new global meter | PENDING | HIGH | Confirm meter location under global gain slider, matching slot-meter behavior and responsiveness |
+| 6.9 | Verify metering semantics against output audio | PENDING | HIGH | Confirm new meter reflects final stereo output level after global gain changes and slot summing |
+| 6.10 | Verify +24 dB range on all linked gain controls | PENDING | HIGH | Confirm slider/parameter max is +24 dB for global, slot, and linked stereo controls; validate global-to-slot interaction remains correct |
+| 6.11 | Verify state save/restore compatibility | PENDING | HIGH | Confirm existing projects load safely and new +24 dB values serialize/restore correctly |
+| 6.12 | Run local Windows regression gates | PENDING | HIGH | Run local Windows checks after implementation: Release build, unit tests, strict pluginval |
+
+#### Phase 6C: Build/Artifact Workflow (Windows local + macOS CI)
+
+| ID | Task | Status | Priority | Details |
+| ---- | ---- | ------ | -------- | ------- |
+| 6.13 | Produce local Windows Release build for validation | PENDING | HIGH | Build on Windows and verify VST3 artifact for local host/pluginval checks |
+| 6.14 | Trigger macOS CI build via GitHub CLI workflow | PENDING | HIGH | Use `gh`-based workflow path/script to dispatch macOS build for this phase |
+| 6.15 | Download macOS plugin artifacts via GitHub CLI/API flow | PENDING | HIGH | Retrieve and extract latest macOS plugin artifacts (`VST3` primary, `AU` optional) for host validation |
+| 6.16 | Add Phase 6 handoff note | PENDING | MEDIUM | Document implementation, verification evidence, build results, and remaining risks in `docs/phase-handoffs-macos/phase-06.md` |
+
 ## Validation Gates
 
 ### Build Gates
