@@ -12,6 +12,8 @@
 
 Produce a macOS build of the MCH plugin that matches current Windows MCH behavior as closely as possible, with a clear path for validation and deployment.
 
+Phase 4 closure decision (2026-05-22): continue with VST3 as the primary host/runtime path based on successful macOS Reaper validation; keep AU enabled in codebase as an optional future validation path, but AU host testing is deferred.
+
 ## Decision Gates
 
 These decisions affect implementation and release flow and should be confirmed before later phases are finalized:
@@ -78,22 +80,22 @@ Locked for Phase 0 (2026-05-21):
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 4.1 | Test plugin discovery and instantiate in Reaper on macOS | BLOCKED | HIGH | Blocked pending native macOS Reaper host access; cannot validate install location, scan/rescan behavior, or clean instantiation from this Windows-only workspace (includes deferred scope from `3.4`). CI support remains green on latest runs `#21` (`26277659339`), `#20` (`26277173310`), and `#19` (`26276703594`) |
-| 4.2 | Test MCH routing behavior in Reaper on macOS | BLOCKED | HIGH | Blocked pending native macOS Reaper audio-host execution for 5.1 / 7.1.4 / 9.1.6 routing verification and stereo-output confirmation (includes deferred scope from `3.5`). CI build/test/bundle validation continues to pass on macOS (`macOS 14 universal`, runs `26277659339`, `26277173310`, `26276703594`) |
-| 4.3 | Test AU host compatibility if AU is enabled | BLOCKED | MEDIUM | Blocked pending native macOS AU-capable host execution to validate AU load and basic behavior |
-| 4.4 | Verify session save/restore with external IR files | BLOCKED | HIGH | Blocked pending native macOS host/runtime checks for path persistence and missing-file behavior after project reload and IR relocation/removal (includes deferred host/runtime portion from `2.3`) |
-| 4.5 | Verify UI layout and interaction on Retina/high-DPI macOS displays | BLOCKED | MEDIUM | Blocked pending native macOS Retina/high-DPI host validation for spacing, meter rendering, and control usability (includes deferred host/runtime portion from `2.4`) |
+| 4.1 | Test plugin discovery and instantiate in Reaper on macOS | ✅ COMPLETED | HIGH | Manual native macOS Reaper validation (2026-05-22) confirmed successful plugin discovery/instantiation using downloaded CI artifact; UI loaded and plugin operated normally |
+| 4.2 | Test MCH routing behavior in Reaper on macOS | ✅ COMPLETED | HIGH | Manual native macOS Reaper validation (2026-05-22) confirmed multichannel routing behavior is functioning and output is processed through DSP |
+| 4.3 | Test AU host compatibility if AU is enabled | PENDING | MEDIUM | Deferred by current validation scope decision: VST3 is the active host path going forward; keep AU option enabled in codebase for future validation if needed |
+| 4.4 | Verify session save/restore with external IR files | ✅ COMPLETED | HIGH | Manual native macOS validation (2026-05-22) confirmed session save/restore behavior for external IR files in tested workflow |
+| 4.5 | Verify UI layout and interaction on Retina/high-DPI macOS displays | ✅ COMPLETED | MEDIUM | Manual native macOS Reaper validation (2026-05-22) confirmed UI layout parity and usable interaction in tested host/display setup |
 | 4.6 | Re-run regression checks after host fixes | ✅ COMPLETED | HIGH | Windows regression pass completed for current Phase 4 iteration: `cmake --build build --config Release`, `ctest --test-dir build -C Release --output-on-failure`, and strict pluginval level 10 (`SUCCESS`, log: `tools/pluginval/logs/latest_strict.txt`). macOS CI corroboration is green in latest `macOS Build And Validation` runs `#21` (`26277659339`), `#20` (`26277173310`), `#19` (`26276703594`) with all expected steps passing (`Configure`, `Build Release`, `Build test target`, `Run unit tests`, `Validate plugin bundles`) |
 
 ### Phase 5: Packaging, Signing, and Deployment
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 5.1 | Define installable macOS artifact set | PENDING | HIGH | Bundle layout, plugin formats, and external IR packaging expectations |
-| 5.2 | Add code signing workflow if required | PENDING | HIGH | Sign bundles for internal or external distribution |
-| 5.3 | Add notarization workflow if required | PENDING | MEDIUM | Only needed for public distribution or stricter macOS install flows |
-| 5.4 | Document deployment steps for a new macOS machine | PENDING | MEDIUM | Include plugin install location and IR file expectations |
-| 5.5 | Add final macOS handoff note | PENDING | MEDIUM | Summarize readiness, limitations, and deployment status |
+| 5.1 | Define installable macOS artifact set | ✅ COMPLETED | HIGH | Artifact set defined for current scope: VST3 + AU plugin bundles from macOS CI/build outputs, optional validation report archive, and explicit note that IR assets are external user-managed files (not bundled) |
+| 5.2 | Add code signing workflow if required | PENDING | HIGH | Deferred pending Apple signing credentials/secrets availability; keep existing codebase/build outputs compatible with future signing enablement |
+| 5.3 | Add notarization workflow if required | PENDING | MEDIUM | Deferred by decision unless distribution scope changes; revisit only when public/distributed install path requires notarization |
+| 5.4 | Document deployment steps for a new macOS machine | ✅ COMPLETED | MEDIUM | Deployment/install guidance documented in `README.md` for VST3 and AU paths, quarantine handling, and Reaper scan flow |
+| 5.5 | Add final macOS handoff note | ✅ COMPLETED | MEDIUM | Added `docs/phase-handoffs-macos/phase-05.md` with completed scope, deferred items, verification basis, and next prerequisites |
 
 ## Validation Gates
 

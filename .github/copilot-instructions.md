@@ -56,6 +56,18 @@
 
 ## Session Learnings (2026-05-21)
 
+## Session Learnings (2026-05-22)
+
+### GitHub Auth And API Operations (Windows)
+- Prefer GitHub CLI (`gh`) for GitHub API and Actions operations in this repository.
+- Do not default to per-chat `GITHUB_TOKEN` prompts when `gh auth status` is valid.
+- First check auth state with: `gh auth status` (or absolute path `C:/Program Files/GitHub CLI/gh.exe` in stale PATH terminals).
+- If `gh` auth is valid, run workflow dispatch/status/artifact tasks through `gh api`.
+- If auth is invalid, run `gh auth login --hostname github.com --git-protocol https --web` and continue after successful device flow.
+- For macOS CI dispatch + monitor + artifact download in new chats, prefer script: `tools/github-actions/run-macos-ci-gh.ps1`.
+- On Windows shells with script execution restrictions, run script via: `$PSHOME/powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\tools\\github-actions\\run-macos-ci-gh.ps1 -DownloadArtifacts`.
+- Keep tokens out of chat messages and repository files; rely on `gh` keyring auth for persistence across terminals/chats.
+
 ### macOS CI Validation Pipeline
 - Native macOS validation is now wired via `.github/workflows/macos-build.yml` and should be treated as the first autonomous gate for Phase 2.2/3.x.
 - Current matrix intent:

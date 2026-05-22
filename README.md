@@ -173,6 +173,46 @@ What the macOS workflow does automatically:
 
 This allows direct native macOS build and compatibility checks without a local macOS device. Interactive host checks (for example Reaper UI behavior and Retina UX) still require a manual macOS validation pass.
 
+## macOS Artifact And Deployment (Phase 5)
+
+Current packaging scope for macOS uses a VST3-first runtime path while keeping AU available in deliverables.
+
+Installable artifact set (current scope):
+
+- Primary plugin bundle: `Sonarworks VMPRO MCH.vst3`
+- Optional/secondary plugin bundle: `Sonarworks VMPRO MCH.component` (AU)
+- Optional validation bundle: macOS CI validation reports artifact (for engineering traceability)
+- IR assets: external user-managed files (not bundled into plugin artifacts)
+
+Expected macOS artifact locations (local native build from `build-macos`):
+
+- `build-macos/BinauralSpeakerRoom_artefacts/Release/VST3/Sonarworks VMPRO MCH.vst3`
+- `build-macos/BinauralSpeakerRoom_artefacts/Release/AU/Sonarworks VMPRO MCH.component`
+
+Expected macOS artifact locations (downloaded GitHub Actions artifact):
+
+- `tools/github-actions/macos-plugins-macos-14-run<run-id>/VST3/Sonarworks VMPRO MCH.vst3`
+- `tools/github-actions/macos-plugins-macos-14-run<run-id>/AU/Sonarworks VMPRO MCH.component`
+
+Deploy to a new macOS machine:
+
+1. Copy `Sonarworks VMPRO MCH.vst3` to `~/Library/Audio/Plug-Ins/VST3`.
+2. If AU is required, copy `Sonarworks VMPRO MCH.component` to `~/Library/Audio/Plug-Ins/Components`.
+3. If files were downloaded from the internet, clear quarantine attributes:
+
+```bash
+xattr -dr com.apple.quarantine "~/Library/Audio/Plug-Ins/VST3/Sonarworks VMPRO MCH.vst3"
+xattr -dr com.apple.quarantine "~/Library/Audio/Plug-Ins/Components/Sonarworks VMPRO MCH.component"
+```
+
+4. In Reaper, open `Preferences > Plug-ins > VST` and run a rescan.
+5. Validate runtime by loading a known IR (for example `_quad_nr3_sm.wav`) and confirming DSP/routing behavior.
+
+Current signing/notarization note:
+
+- Internal-signing and notarization workflows are intentionally deferred in current scope until Apple credentials/secrets are available.
+- Keep AU enabled in the codebase and artifacts, even though VST3 is the active host/runtime path.
+
 ## MVP Release Checklist
 
 - Confirm `cmake -S . -B build -G "Visual Studio 17 2022" -A x64` completes from a clean checkout
