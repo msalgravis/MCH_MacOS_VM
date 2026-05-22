@@ -2,6 +2,7 @@
 build/
 build-macos/
 build-macos-intel/
+build-ninja/
 
 # CMake and generated files
 CMakeUserPresets.json
@@ -31,3 +32,9 @@ tools/pluginval/logs/
 
 # Local DAW session backups
 test_session/Backups/
+
+# Local GitHub Actions artifact downloads/cache
+tools/github-actions/*.zip
+tools/github-actions/macos-plugins-*/
+tools/github-actions/macos-validation-*/
+tools/github-actions/tmp_job_logs/
