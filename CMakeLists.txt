@@ -82,21 +82,26 @@ target_link_libraries(BinauralSpeakerRoom
 
 juce_generate_juce_header(BinauralSpeakerRoom)
 
-add_executable(BinauralSpeakerRoomTests
-    Tests/TestMain.cpp
-    Source/IRLoader.cpp
-    Source/BinauralConvolver.cpp
-    Source/Parameters.cpp
-    Source/MchSlotIrManager.cpp
-    Source/SpeakerPairProcessor.cpp
-    Source/MchBinauralRenderer.cpp
+juce_add_console_app(BinauralSpeakerRoomTests
+    PRODUCT_NAME "BinauralSpeakerRoomTests"
+)
+
+target_sources(BinauralSpeakerRoomTests
+    PRIVATE
+        Tests/TestMain.cpp
+        Source/IRLoader.cpp
+        Source/BinauralConvolver.cpp
+        Source/Parameters.cpp
+        Source/MchSlotIrManager.cpp
+        Source/SpeakerPairProcessor.cpp
+        Source/MchBinauralRenderer.cpp
 )
 
 target_include_directories(BinauralSpeakerRoomTests
     PRIVATE
         Source
         Tests
-        ${CMAKE_CURRENT_BINARY_DIR}/BinauralSpeakerRoom_artefacts/JuceLibraryCode
+    ${CMAKE_CURRENT_BINARY_DIR}/BinauralSpeakerRoomTests_artefacts/JuceLibraryCode
 )
 
 target_link_libraries(BinauralSpeakerRoomTests
@@ -112,5 +117,7 @@ target_compile_definitions(BinauralSpeakerRoomTests
     PRIVATE
         BSR_PROJECT_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
 )
+
+juce_generate_juce_header(BinauralSpeakerRoomTests)
 
 add_test(NAME BinauralSpeakerRoomTests COMMAND BinauralSpeakerRoomTests)
