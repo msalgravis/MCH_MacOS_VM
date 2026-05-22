@@ -70,6 +70,7 @@
 - If macOS build fails with generic `xcodebuild`/exit-65 style errors and logs are not directly available, prefer stabilizing CI generator/toolchain first (e.g., Ninja single-config Release) before making broad source changes.
 - Keep fixes minimal and parity-safe: no DSP behavior changes while chasing macOS build portability.
 - After each CI fix push, re-check run/job states and step-level outcomes to identify whether failure moved past `Configure`, `Build Release`, `ctest`, or bundle validation.
+- Retry guard for stuck runs: never loop on cancel/relaunch. For the same commit SHA, allow at most one manual cancel+re-dispatch when a run shows no `updated_at` movement for more than 20 minutes. If the replacement run also stalls, stop retrying and treat it as CI infrastructure instability; document the stalled run IDs/timestamps and continue with code/log analysis from the latest completed run.
 
 ### DSP vs UI Separation
 - MCH DSP backend (MchBinauralRenderer, SpeakerPairProcessor, MchSlotIrManager) is **fully implemented and working** independently.
