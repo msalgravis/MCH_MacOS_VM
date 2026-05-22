@@ -16,6 +16,7 @@ jobs:
   build-macos:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
 
     strategy:
       fail-fast: false
@@ -32,6 +33,7 @@ jobs:
 
       - name: Configure
         shell: bash
+        timeout-minutes: 15
         run: |
           mkdir -p "${{ matrix.build_dir }}/ci-reports"
           cmake -S . -B "${{ matrix.build_dir }}" -G Ninja \
@@ -46,16 +48,19 @@ jobs:
 
       - name: Build Release
         shell: bash
+        timeout-minutes: 20
         run: |
           cmake --build "${{ matrix.build_dir }}" 2>&1 | tee "${{ matrix.build_dir }}/ci-reports/build_release.log"
 
       - name: Build test target
         shell: bash
+        timeout-minutes: 10
         run: |
           cmake --build "${{ matrix.build_dir }}" --target BinauralSpeakerRoomTests 2>&1 | tee "${{ matrix.build_dir }}/ci-reports/build_tests.log"
 
       - name: Run unit tests
         shell: bash
+        timeout-minutes: 10
         run: |
           ctest --test-dir "${{ matrix.build_dir }}" --output-on-failure 2>&1 | tee "${{ matrix.build_dir }}/ci-reports/ctest.log"
 
