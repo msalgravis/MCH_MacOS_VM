@@ -78,12 +78,12 @@ Locked for Phase 0 (2026-05-21):
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 4.1 | Test plugin discovery and instantiate in Reaper on macOS | PENDING | HIGH | Confirm install location, scan/rescan behavior, and clean instantiation on a new project (includes deferred scope from `3.4`) |
-| 4.2 | Test MCH routing behavior in Reaper on macOS | PENDING | HIGH | Confirm 5.1 / 7.1.4 / 9.1.6 routing and stereo output behavior (includes deferred scope from `3.5`) |
-| 4.3 | Test AU host compatibility if AU is enabled | PENDING | MEDIUM | Validate AU load and basic behavior in a suitable host |
-| 4.4 | Verify session save/restore with external IR files | PENDING | HIGH | Confirm path persistence and expected missing-file behavior after project reload and IR relocation/removal (includes deferred host/runtime portion from `2.3`) |
-| 4.5 | Verify UI layout and interaction on Retina/high-DPI macOS displays | PENDING | MEDIUM | Confirm spacing, meter rendering, and control usability (includes deferred host/runtime portion from `2.4`) |
-| 4.6 | Re-run regression checks after host fixes | PENDING | HIGH | Reconfirm Windows behavior remains intact after any macOS changes |
+| 4.1 | Test plugin discovery and instantiate in Reaper on macOS | BLOCKED | HIGH | Blocked pending native macOS Reaper host access; cannot validate install location, scan/rescan behavior, or clean instantiation from this Windows-only workspace (includes deferred scope from `3.4`). CI support remains green on latest runs `#21` (`26277659339`), `#20` (`26277173310`), and `#19` (`26276703594`) |
+| 4.2 | Test MCH routing behavior in Reaper on macOS | BLOCKED | HIGH | Blocked pending native macOS Reaper audio-host execution for 5.1 / 7.1.4 / 9.1.6 routing verification and stereo-output confirmation (includes deferred scope from `3.5`). CI build/test/bundle validation continues to pass on macOS (`macOS 14 universal`, runs `26277659339`, `26277173310`, `26276703594`) |
+| 4.3 | Test AU host compatibility if AU is enabled | BLOCKED | MEDIUM | Blocked pending native macOS AU-capable host execution to validate AU load and basic behavior |
+| 4.4 | Verify session save/restore with external IR files | BLOCKED | HIGH | Blocked pending native macOS host/runtime checks for path persistence and missing-file behavior after project reload and IR relocation/removal (includes deferred host/runtime portion from `2.3`) |
+| 4.5 | Verify UI layout and interaction on Retina/high-DPI macOS displays | BLOCKED | MEDIUM | Blocked pending native macOS Retina/high-DPI host validation for spacing, meter rendering, and control usability (includes deferred host/runtime portion from `2.4`) |
+| 4.6 | Re-run regression checks after host fixes | ✅ COMPLETED | HIGH | Windows regression pass completed for current Phase 4 iteration: `cmake --build build --config Release`, `ctest --test-dir build -C Release --output-on-failure`, and strict pluginval level 10 (`SUCCESS`, log: `tools/pluginval/logs/latest_strict.txt`). macOS CI corroboration is green in latest `macOS Build And Validation` runs `#21` (`26277659339`), `#20` (`26277173310`), `#19` (`26276703594`) with all expected steps passing (`Configure`, `Build Release`, `Build test target`, `Run unit tests`, `Validate plugin bundles`) |
 
 ### Phase 5: Packaging, Signing, and Deployment
 
