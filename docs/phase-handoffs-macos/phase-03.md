@@ -1,36 +1,44 @@
-# Phase 03 Handoff (macOS MCH Enablement) - In Progress
+# Phase 03 Handoff (macOS MCH Enablement)
 
 ## Scope Status
-- Phase 3 has started via autonomous GitHub Actions macOS runs.
-- First native macOS build is not yet green.
+- Phase 3 core CI milestone reached: first full native macOS run is green.
+- Remaining Phase 3 work is host-side validation (plugin load and functional audio checks on macOS host).
 
 ## Latest Verified State
-- macOS workflow: `.github/workflows/macos-build.yml` exists and triggers on push.
-- Multiple macOS runs have executed on `main`; `macOS 14 universal` reached `Build Release` and failed with generic exit code 65 in prior Xcode-based configuration.
-- Windows workflow remains green in parallel.
+- macOS workflow: `.github/workflows/macos-build.yml` executes `Configure`, `Build Release`, unit tests, and bundle validation with artifact uploads.
+- First full successful native run:
+  - Run ID: `26276703594`
+  - Commit: `ec158a5`
+  - Runner lane: `macOS 14 universal`
+  - Result: all steps `success`
+- CI baseline tag created: `ci-macos-baseline-2026-05-22` (points to `ec158a5`).
+- Windows workflow is manual-only while macOS stabilization is active.
 
 ## Changes Applied During This Iteration
-- Source portability fixes in `PluginProcessor`:
-  - Replaced `std::atomic<std::shared_ptr<IRTransferData>>` with `std::shared_ptr` + `juce::SpinLock` guarded access.
-  - Made APVTS listener inheritance public.
-  - Qualified base-class calls (`this->getTotalNumInputChannels()`, `this->getTotalNumOutputChannels()`, `this->getSampleRate()`) in key locations.
+- Source and CMake portability fixes (from prior failing runs) were validated by green macOS CI:
+  - `CMakeLists.txt` updated to include C language in project declaration and to use a JUCE-native test target setup compatible with macOS/Ninja.
+  - Test target now resolves its JUCE generated header path reliably in CI.
 - CI stabilization updates:
-  - macOS workflow configured to disable code-signing attributes in CI.
-  - macOS workflow moved from `Xcode` to `Ninja` generator with `-DCMAKE_BUILD_TYPE=Release` to reduce Xcode-specific exit-65 failures.
-- Cross-chat context persisted in `.github/copilot-instructions.md` under Session Learnings (2026-05-21).
+  - macOS workflow kept on single-lane `macOS 14 universal` during stabilization.
+  - Added bounded retry policy for stuck runs (single cancel+re-dispatch max for same SHA, then stop and treat as infra instability).
+  - Added per-job/per-step timeouts to avoid indefinite hangs.
+- Project instructions updated to preserve queue-control and bounded retry behavior in future chats.
 
 ## Verification Performed
-- Local Windows regression after source changes:
+- Local Windows regression after CMake/source updates:
   - `cmake --build build --config Release` passed.
-  - `ctest --test-dir build -C Release --output-on-failure` passed.
-- Remote CI:
-  - macOS runs trigger correctly on push to `main`.
-  - Prior runs still not fully green; latest run after Ninja migration must be checked for pass/fail progression.
+- Remote macOS CI (run `26276703594`) passed all steps:
+  - `Configure`
+  - `Build Release`
+  - `Build test target`
+  - `Run unit tests`
+  - `Validate plugin bundles`
+  - artifact/report uploads
 
 ## Known Blockers
-- API token available in this session can read run/job status but cannot download private job logs (403 on log download endpoint), so root-cause extraction depends on check annotations or direct log access in GitHub UI.
+- No native local macOS host is available in this workspace, so host/plugin-load validation in Reaper must continue through remote macOS execution and/or manual host checks on a macOS machine.
 
 ## Immediate Next Steps
-1. Check newest macOS run after Ninja migration and capture exact failing step/job.
-2. If `Build Release` passes, continue to `ctest` and bundle validation outcomes and update `macos_mch_tasks.md` statuses.
-3. If build still fails, extract first concrete compiler/linker error from UI logs and apply focused portability fix.
+1. Start Phase 4 host validation on macOS (Reaper scan/load, routing, IR/session restore behavior).
+2. Keep `ec158a5` (`ci-macos-baseline-2026-05-22`) as rollback/reference baseline while applying one change per iteration.
+3. Re-enable additional macOS lanes (for example Intel-specific pass) only after maintaining stable green outcomes on the baseline lane.

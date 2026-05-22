@@ -57,8 +57,8 @@ Locked for Phase 0 (2026-05-21):
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
 | 2.1 | Audit source for Windows-only assumptions | ✅ COMPLETED | HIGH | Audited Source/Tests path and restore flows; no explicit Win32-only APIs found in plugin code, and path restore hardening was scoped to cross-platform `juce::File` usage |
-| 2.2 | Fix compiler issues under Clang/macOS | NEEDS WORK | HIGH | Applied portability-safe path restore helpers and fixed JUCE API usage (`juce::File::isAbsolutePath` static call); autonomous macOS CI now runs natively, but latest `macOS 14 universal` job failed at `Build Release` and must be fixed before marking complete |
-| 2.3 | Verify plugin state, file restore, and IR loading behavior on macOS | NEEDS WORK | HIGH | Added path normalization for persisted IR state (trim/quotes/`~/` support, relative-path resolution, file-only checks) and validated via Windows unit/pluginval regression; native macOS runtime verification deferred to Phase 3 |
+| 2.2 | Fix compiler issues under Clang/macOS | ✅ COMPLETED | HIGH | Clang/macOS CI blockers were resolved; first full native `macOS 14 universal` workflow passed end-to-end (`Configure`, `Build Release`, `Build test target`, `Run unit tests`, bundle validation) on run `26276703594` |
+| 2.3 | Verify plugin state, file restore, and IR loading behavior on macOS | IN PROGRESS | HIGH | Restore-path and IR loading logic is now validated through native macOS unit-test execution in CI (run `26276703594`); host-runtime/project-session restore checks remain pending in later host validation phases |
 | 2.4 | Verify UI behavior on macOS | NEEDS WORK | MEDIUM | UI code reviewed for platform-safe JUCE file chooser/layout usage; native macOS Retina/file-dialog behavioral verification remains pending |
 | 2.5 | Keep stereo and Windows MCH behavior unchanged | ✅ COMPLETED | HIGH | Windows regression gates passed after changes (`cmake --build build --config Release`, `ctest --test-dir build -C Release --output-on-failure`, strict pluginval script success) |
 | 2.6 | Add or update tests for any platform-sensitive changes | ✅ COMPLETED | MEDIUM | Added slot-restore test for quoted paths with spaces and made missing-file IRLoader test path platform-neutral |
@@ -67,12 +67,12 @@ Locked for Phase 0 (2026-05-21):
 
 | ID | Task | Status | Priority | Details |
 | ---- | ---- | ------ | -------- | ------- |
-| 3.1 | Produce first successful macOS plugin build | IN PROGRESS | HIGH | Autonomous CI attempted native macOS build; latest `macOS 14 universal` failed at `Build Release` and `macOS 13 x86_64` remained queued, so first successful build is not yet achieved |
-| 3.2 | Run automated tests on macOS where available | PENDING | HIGH | Run unit tests and capture failures specific to macOS |
-| 3.3 | Verify bundle before host scan | PENDING | HIGH | Confirm produced bundle has the expected architecture slice(s), metadata, install path, and signing state before debugging host-specific failures |
+| 3.1 | Produce first successful macOS plugin build | ✅ COMPLETED | HIGH | First successful native build achieved on `macOS 14 universal` (run `26276703594`) |
+| 3.2 | Run automated tests on macOS where available | ✅ COMPLETED | HIGH | `ctest` execution passed in native macOS CI on run `26276703594` |
+| 3.3 | Verify bundle before host scan | ✅ COMPLETED | HIGH | CI bundle validation step passed (`lipo`, `file`, `Info.plist`, `codesign --display`) on run `26276703594` |
 | 3.4 | Validate plugin load on macOS host environment | PENDING | HIGH | Confirm plugin bundle loads without immediate host rejection |
 | 3.5 | Verify IR loading and MCH audio path on macOS | PENDING | HIGH | Confirm per-slot IR load, render, bypass, and metering behavior |
-| 3.6 | Add phase handoff note | PENDING | MEDIUM | Record first successful native build and blockers |
+| 3.6 | Add phase handoff note | ✅ COMPLETED | MEDIUM | Updated `docs/phase-handoffs-macos/phase-03.md` with first successful native build milestone and remaining blockers |
 
 ### Phase 4: Host Validation on macOS
 

@@ -64,6 +64,7 @@
 - Workflow concurrency is enabled to cancel superseded in-progress runs on the same ref; keep this behavior unless the user explicitly asks for historical parallel runs.
 - Windows CI (`.github/workflows/windows-build.yml`) is manual-only (`workflow_dispatch`) while macOS stabilization is active; rely on local Windows build/pluginval for day-to-day regression checks.
 - CI runs should build plugin targets, run `ctest`, validate bundle metadata (`lipo`, `file`, `Info.plist`, `codesign --display`), and upload artifacts/reports.
+- First full successful native macOS baseline: Actions run `26276703594` on commit `ec158a5`; baseline tag is `ci-macos-baseline-2026-05-22`.
 - If a new chat starts Phase 3 work, always check latest Actions run status/results first before applying code changes.
 
 ### macOS CI Troubleshooting Flow
